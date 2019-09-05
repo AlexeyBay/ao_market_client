@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Albion online market helper</title>
+    <meta name="description" content="Albion online market helper">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js" crossorigin="anonymous"></script>
+    <script src="./jquery.multiselect.js"></script>
+    <script src="./items.js"></script>
+    <script src="./gridoptions.js"></script>
+    <script src="./datafetch.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css">
+    <link rel="stylesheet" href="./bootstrap.min.css">
+    <link rel="stylesheet" href="./loader-double.css">
+    <link rel="stylesheet" href="./jquery.multiselect.css">
+    <style type="text/css">
+        html, body, .container, .card {
+            min-height: 100%;
+        }
+
+        tr:hover {
+            background-color: #0e4e90;
+        }
+
+        .navbar-collapse {
+            flex-direction: row-reverse;
+        }
+
+        .jsgrid-grid-header, .jsgrid-grid-body {
+            overflow-y: hidden;
+        }
+
+        .jsgrid-grid-body tr:hover {
+            background-color: #4183c4;
+        }
+
+        .number-range {
+            max-width: 45%;
+        }
+
+        .jsgrid-table {
+            font-size: 14px;
+        }
+
+        .jsgrid-filter-row input, citySelect {
+            font-size: 12px;
+            height: 32px;
+            background-color: #2B303B;
+            color: deepskyblue;
+            border: 1px solid #0e4e90;
+            border-radius: 3px;
+        }
+
+        .citySelect {
+            height: 48px;
+            font-size: 16px;
+        }
+
+        .jsgrid-alt-row {
+            background-color: lightslategray;
+        }
+
+        .ms-options-wrap {
+            width: 300px;
+            position: absolute;
+            margin-left: -320px;
+        }
+    </style>
+    <script type="text/javascript">
+        let profit = null;
+        $(() => {
+            $('select[multiple]').multiselect();
+            const recalcProfit = () => {
+                $('.loader').toggleClass('is-active');
+                let items = resetItems();
+                const cities = $('#citySelect').val().join(',');
+                fetchAndParse(items, cities)
+                    .then((res) => {
+                        profit = res;
+                        console.log(profit);
+                        drawGrid(profit);
+                        $(".loader").toggleClass("is-active");
+                    })
+                    .catch(() => {
+                        $(".loader").toggleClass("is-active");
+                    });
+            }
+            $("#fetchButton").on("click", recalcProfit);
+            $("#fetchButton").on("keyup", recalcProfit);
+        });
+    </script>
+</head>
+
+<body>
+<div>
+    <nav class="navbar navbar-light navbar-expand-md navigation-clean-button">
+        <div class="container-fluid">
+            <a class="navbar-brand">Albion online market helper</a>
+            <div class="collapse navbar-collapse">
+          <span class="navbar-text actions">
+            <select id="citySelect" multiple class="citySelect" size="1">
+              <option value="Caerleon" selected>Caerleon</option>
+              <option value="Lymhurst" selected>Lymhurst</option>
+              <option value="Bridgewatch">Bridgewatch</option>
+              <option value="Martlock">Martlock</option>
+              <option value="Fort%20Sterling">Fort Sterling</option>
+              <option value="Thetford">Thetford</option>
+            </select>
+            <a class="btn btn-light action-button" role="button" href="#" id="fetchButton">Fetch data</a>
+          </span>
+            </div>
+        </div>
+    </nav>
+</div>
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            <div id="jsGrid"></div>
+        </div>
+    </div>
+</div>
+<div class="loader loader-double" data-text="It can take some time to fetch all data"></div>
+</body>
+</html>
