@@ -41,10 +41,16 @@ function fetchAndParse(items_list, cities) {
                         items[id].buy_price_min_date = data.buy_price_min_date;
                         items[id].buy_price_min[data.city] = data.buy_price_min;
                     }
-
                     items[id].originalId = data.item_id;
-                    items[id].fulldump = items[id].fulldump || "";
                     items[id].fulldump = items[id].fulldump += JSON.stringify(data, null, 2);
+
+                    let subTier = data.item_id.search(/@(\d)$/);
+                    items[id].tier = data.item_id[data.item_id.search(/(\d)/)];
+                    if(subTier !== -1 ){
+                        items[id].tier = items[id].tier + '.' + data.item_id[subTier + 1];
+                    }
+                    items[id].tier = parseFloat(items[id].tier);
+                    items[id].fulldump = items[id].fulldump || "";
 //                }
             })
             let profit = [];
@@ -53,17 +59,22 @@ function fetchAndParse(items_list, cities) {
                     const cityFrom = Object.keys(items[itemKey].sell_price_min).reduce((a, b) => items[itemKey].sell_price_min[a] < items[itemKey].sell_price_min[b] && items[itemKey].sell_price_min[a] > 0 ? a : b);
                     const cityTo = Object.keys(items[itemKey].buy_price_max).reduce((a, b) => items[itemKey].buy_price_max[a] > items[itemKey].buy_price_max[b] ? a : b);
                     const profitVal = (items[itemKey].buy_price_max[cityTo] && items[itemKey].sell_price_min[cityFrom] )? Math.round(((items[itemKey].buy_price_max[cityTo] / items[itemKey].sell_price_min[cityFrom]) * 100 - 100)) : null;
-                    if(cityFrom !== cityTo &&  profitVal > 0) {
+                    const profitDelayedVal = (items[itemKey].sell_price_min[cityTo] && items[itemKey].sell_price_min[cityFrom] )? Math.round(((items[itemKey].sell_price_min[cityTo] / items[itemKey].sell_price_min[cityFrom]) * 100 - 100)) : null;
+                    if(cityFrom !== cityTo && (profitVal > 0 || profitDelayedVal > 0)) {
                         profit.push({
                             name: items[itemKey].name,
                             quality: items[itemKey].quality,
-                            id: itemKey, //items[itemKey].originalId
+                            id: items[itemKey].originalId, //itemKey,
                             from: cityFrom,
                             from_sell_price: items[itemKey].sell_price_min[cityFrom],
                             to: cityTo,
                             to_buy_price: items[itemKey].buy_price_max[cityTo],
+                            to_sell_price: items[itemKey].sell_price_max[cityTo],
                             profit_percent: profitVal,
+                            profit_percent_delayed: profitDelayedVal,
                             price_diff: items[itemKey].buy_price_max[cityTo] - items[itemKey].sell_price_min[cityFrom],
+                            price_diff_delayed: items[itemKey].sell_price_min[cityTo] - items[itemKey].sell_price_min[cityFrom],
+                            tier: items[itemKey].tier,
                             fulldump: items[itemKey].fulldump
                         });
                     }

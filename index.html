@@ -53,6 +53,10 @@
             font-size: 14px;
         }
 
+        .jsgrid-table td {
+            text-shadow: 1px 1px 6px black;
+        }
+
         .jsgrid-filter-row input, citySelect {
             font-size: 12px;
             height: 32px;
@@ -82,9 +86,33 @@
             white-space: pre-wrap;
             font-size: 10px;
         }
+
+        .custom-number {
+            text-align: right;
+        }
+
+        .expandable-block {
+            width: 30px;
+            overflow: hidden;
+            position: absolute;
+            margin-top: -10px;
+            height: 20px;
+            background-color: #41464a;
+        }
+        .expandable-block:hover {
+            width: auto;
+        }
+        .tier_1 {
+            color: #80c780;
+        }
+        .tier_2 {
+            color: #3bb4d8;
+        }
+        .tier_3 {
+            color: hotpink;
+        }
     </style>
     <script type="text/javascript">
-        let profit = null;
         $(() => {
             $('select[multiple]').multiselect();
             const recalcProfit = () => {
@@ -93,9 +121,7 @@
                 const cities = $('#citySelect').val().join(',');
                 fetchAndParse(items, cities)
                     .then((res) => {
-                        profit = res;
-                        console.log(profit);
-                        drawGrid(profit);
+                        drawGrid(res);
                         $(".loader").toggleClass("is-active");
                     })
                     .catch(() => {

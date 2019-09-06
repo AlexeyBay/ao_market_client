@@ -3,8 +3,11 @@ var CustomNumber = function (config) {
 };
 
 CustomNumber.prototype = new jsGrid.Field({
+    css: "custom-number",
     sorter: function (val1, val2) {
-        return val1 - val2;
+        val1 = val1 || 0;
+        val2 = val2 || 0;
+        return new Number(val1) - new Number(val2);
     },
 
     filterTemplate: function () {
@@ -38,8 +41,33 @@ PreString.prototype = new jsGrid.Field({
     css: "pre-field"
 });
 
+var TierValue = function (config) {
+    jsGrid.Field.call(this, config);
+};
+
+TierValue.prototype = new jsGrid.Field({
+    cellRenderer: function(val) {
+        return ($(`<td class="tier_${(parseFloat(val)*10)%10}">${val}</td>`))
+    },
+    align: "right"
+});
+
+
+var HiddenText = function (config) {
+    jsGrid.Field.call(this, config);
+};
+
+HiddenText.prototype = new jsGrid.Field({
+    css: "hidden-text",
+    itemTemplate: function (val) {
+        return $(`<div class="expandable-block">${val}</div>`);
+    }
+});
+
 jsGrid.fields.customNumber = CustomNumber;
 jsGrid.fields.preString = PreString;
+jsGrid.fields.hiddenText = HiddenText;
+jsGrid.fields.tierValue = TierValue;
 
 function drawGrid(data) {
     $("#jsGrid").jsGrid({
@@ -74,61 +102,83 @@ function drawGrid(data) {
                 width: 150
             },
             {
+                name: "tier",
+                title: "Tier",
+                type: "tierValue",
+                width: 40
+            },
+            {
                 name: "quality",
                 title: "Quality",
                 type: "number",
-                width: 75
+                width: 40
             },
             {
                 name: "id",
                 title: "ID",
-                type: "text",
-                width: 200
+                type: "hiddenText",
+                width: 40
             },
             {
                 name: "from",
                 title: "From",
                 type: "text",
-                width: 100
+                width: 80
             },
             {
                 name: "from_sell_price",
-                title: "S.price",
+                title: "FS.price",
                 type: "customNumber",
-                width: 175
+                width: 100
             },
             {
                 name: "to",
                 title: "To",
                 type: "text",
-                width: 100
+                width: 80
             },
             {
                 name: "to_buy_price",
-                title: "B.price",
+                title: "TB.price",
                 type: "customNumber",
-                width: 175
+                width: 100
+            },
+            {
+                name: "to_sell_price",
+                title: "TS.price",
+                type: "customNumber",
+                width: 100
             },
             {
                 name: "profit_percent",
                 title: "Profit %",
                 type: "customNumber",
-                width: 175
+                width: 100
             },
             {
                 name: "price_diff",
                 title: "Profit per item",
                 type: "customNumber",
-                width: 175
+                width: 100
             },
-/*
+            {
+                name: "profit_percent_delayed",
+                title: "Profit % (auc)",
+                type: "customNumber",
+                width: 100
+            },
+            {
+                name: "price_diff_delayed",
+                title: "Profit per item (auc)",
+                type: "customNumber",
+                width: 100
+            }/*,
             {
                 name: "fulldump",
                 title: "fulldump",
                 type: "preString",
                 width: 375
-            }
-*/
+            }*/
         ]
     });
 }
