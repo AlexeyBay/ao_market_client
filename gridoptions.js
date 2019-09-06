@@ -7,11 +7,6 @@ CustomNumber.prototype = new jsGrid.Field({
         return val1 - val2;
     },
 
-    /*    itemTemplate: function(value) {
-            console.log(value);
-            return value;
-        },*/
-
     filterTemplate: function () {
         this._from = $("<input type='number' name='from' value='0'  class='number-range'>");
         this._to = $("<input type='number' name='to' value='999999999' class='number-range'>");
@@ -35,7 +30,16 @@ CustomNumber.prototype = new jsGrid.Field({
     }
 });
 
+var PreString = function (config) {
+    jsGrid.Field.call(this, config);
+};
+
+PreString.prototype = new jsGrid.Field({
+    css: "pre-field"
+});
+
 jsGrid.fields.customNumber = CustomNumber;
+jsGrid.fields.preString = PreString;
 
 function drawGrid(data) {
     $("#jsGrid").jsGrid({
@@ -68,6 +72,12 @@ function drawGrid(data) {
                 title: "Name",
                 type: "text",
                 width: 150
+            },
+            {
+                name: "quality",
+                title: "Quality",
+                type: "number",
+                width: 75
             },
             {
                 name: "id",
@@ -110,7 +120,15 @@ function drawGrid(data) {
                 title: "Profit per item",
                 type: "customNumber",
                 width: 175
+            },
+/*
+            {
+                name: "fulldump",
+                title: "fulldump",
+                type: "preString",
+                width: 375
             }
+*/
         ]
     });
 }
