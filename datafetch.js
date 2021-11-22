@@ -2,9 +2,9 @@ function fetchAndParse(items_list, cities) {
     let promises = [];
     let items = {};
 
-    for(let i = 0; i < Math.ceil(Object.keys(items_list).length / 10); i++ ){
+    for(let i = 0; i < Math.ceil(Object.keys(items_list).length / 100); i++ ){
 //    for(let i = 0; i < 10; i++ ){
-        let itemIds = Object.keys(items_list).slice(i*10, (i+1)*10).join(',');
+        let itemIds = Object.keys(items_list).slice(i*100, (i+1)*100).join(',');
         promises.push(
             fetch(`https://www.albion-online-data.com/api/v2/stats/prices/${itemIds}?locations=${cities}&qualities=0`)
                 .then(function(response) {
